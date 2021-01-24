@@ -1,0 +1,17 @@
+# 2. Реализовать функцию, принимающую несколько параметров, описывающих
+# данные пользователя: имя, фамилия, год рождения, город проживания, email,
+# телефон. Функция должна принимать параметры как именованные аргументы.
+# Реализовать вывод данных о пользователе одной строкой.
+
+def collect_func(name, surname, birth_year, city, email):
+    '''Функция для красивого вывода информации о президенте США.
+    Важно: Применять только после инуагурации
+    '''
+    print('*' * 100)
+    print(f'Новый президент США {name} {surname}, родился {birth_year} , живёт в {city}, контактный email: {email}')
+    print('*' * 100)
+
+
+collect_func(name='Joe', surname='Biden', birth_year=1942, city='Washington DC', email='i_know_who_won@blm.com')
+print('\nНо есть ещё одна версия!!!\n')
+collect_func(name='Donald John ', surname='Trump', birth_year=1946, city='Palm Beach', email='i_hate_twitter@yandex.ru')
