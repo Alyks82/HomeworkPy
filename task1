@@ -1,0 +1,15 @@
+# 1. Создать программно файл в текстовом формате, записать в него построчно данные, вводимые пользователем.
+# Об окончании ввода данных свидетельствует пустая строка.
+
+income_text = open('typed_file.txt', 'w', encoding='UTF-8')
+
+while True:
+    inp_line = input('Введите текст. Ввод завершите клавишей Enter. Для выхода просто нажмите эту клавишу ')
+    if inp_line == '':
+        break
+    else:
+        income_text.write(inp_line + '\n')
+income_text = open('typed_file.txt', 'r', encoding='UTF-8')  # читаем для контроля
+print(income_text.read())
+
+income_text.close()
