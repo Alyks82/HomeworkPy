@@ -1,0 +1,25 @@
+# 2. Создать текстовый файл (не программно), сохранить в нем несколько строк, выполнить подсчет количества строк,
+# количества слов в каждой строке.
+from random import randint, randrange, shuffle
+
+with open('typed_file.txt', 'a', encoding='UTF-8') as raw:  # файл из предыдущего задания
+    for _ in range(randint(0, 5)):  # случайное количество проходов
+        line = [chr(randrange(1040, 1103)) for _ in range(randint(0, 15))]  # русские буквы из патриотизма
+        line += [" " for _ in range(0, 2)]  # добавляем немного пробелов для интриги
+        shuffle(line)  # взболтать, но не смешивать :)
+        line = ''.join(line) + '\n'  # для выполнения переноса строчки
+        raw.write(str(line))
+
+content_label = {}  # словарь для результата подсчёта
+
+with open('typed_file.txt', 'r', encoding='UTF-8') as new:
+    num_line = 0
+    for n, o_line in enumerate(new):
+        num_line += 1
+        content_label[n] = len([l for l in o_line[:-1].split(' ') if l != ''])  # Число слов
+        # число слов подсчитал некрасиво, но работает корректно
+        # срез нужен для удаления знака переноса
+
+print(f'Количество строк {num_line}')
+for n_l, n_w in content_label.items():
+    print(f'В {n_l + 1}-й строке {n_w} слов')
