@@ -1,0 +1,97 @@
+# 4. Реализуйте базовый класс Car. У данного класса должны быть следующие атрибуты: speed, color, name, is_police (булево).
+# А также методы: go, stop, turn(direction), которые должны сообщать, что машина поехала, остановилась, повернула (куда).
+# Опишите несколько дочерних классов: TownCar, SportCar, WorkCar, PoliceCar.
+# Добавьте в базовый класс метод show_speed, который должен показывать текущую скорость автомобиля.
+# Для классов TownCar и WorkCar переопределите метод show_speed. При значении скорости свыше 60 (TownCar) и 40 (WorkCar)
+# должно выводиться сообщение о превышении скорости.
+# Создайте экземпляры классов, передайте значения атрибутов.
+# Выполните доступ к атрибутам, выведите результат. Выполните вызов методов и также покажите результат.
+
+
+'''Имитация работы маячка, отслеживающего машину'''
+from random import randint
+
+
+class Car:
+    def __init__(self, speed=0, color='белого', name='хетчбек', is_police=False):
+        self.s = speed
+        self.c = color
+        self.n = name
+        self.ip = is_police
+
+    def go(self):
+        print('ТС в движении')
+        self.s += 10
+
+    def stop(self):
+        print('ТС останавливается')
+        self.s -= 10 if self.s == 10 else self.s
+
+    def turn(self, direction):
+        print(f'ТС {direction}')
+
+    def show_speed(self):
+        if self.s == 0:
+            print("Автомобиль стоит")
+        else:
+            print(f'Автомобиль движется со скоростью {self.s} км/ч')
+
+
+class TownCar(Car):
+    def __init__(self, speed=0, color='серого', name='Toyota Crown', is_police=False):
+        super().__init__(speed, color, name, is_police)
+
+    def show_speed(self):
+        if self.s >= 60:
+            print(f'Машина превысила предельно допустимую скорость на {self.s - 60}')
+        else:
+            if self.s == 0:
+                print("Автомобиль стоит")
+            else:
+                print(f'Автомобиль движется со скоростью {self.s} км/ч')
+
+
+class SportCar(Car):
+    def __init__(self, speed=0, color='красного', name='Ferrari', is_police=False):
+        super().__init__(speed, color, name, is_police)
+
+
+class WorkCar(Car):
+    def __init__(self, speed=0, color='грязного', name='Бульдозер', is_police=False):
+        super().__init__(speed, color, name, is_police)
+
+    def show_speed(self):
+        if self.s >= 40:
+            print(f'Машина превысила предельно допустимую скорость на {self.s - 40}')
+        else:
+            if self.s == 0:
+                print("Автомобиль стоит")
+            else:
+                print(f'Автомобиль движется со скоростью {self.s} км/ч')
+
+
+class PoliceCar(Car):
+    def __init__(self, speed=0, color='мультиколор', name='Ford', is_police=True):
+        super().__init__(speed, color, name, is_police)
+
+
+direction = ['поехало прямо', 'повернуло налево', 'повернуло вправо']
+
+c_1 = Car()
+c_2 = TownCar()
+c_3 = SportCar()
+c_4 = WorkCar()
+c_5 = PoliceCar()
+
+my_garage = [c_1, c_2, c_3, c_4, c_5]
+
+for i in my_garage:
+    if i.ip:
+        print('Данные авто засекречены! Есть только информация по GPS за последний час')
+    else:
+        print(f'Установлен в машину {i.n} {i.c} цвета. \nДанные GPS за последний час:')
+    for _ in range(randint(0, 5)):
+        i.go() if randint(0, 1) == 0 else i.stop()
+        i.turn(direction[randint(0, 2)])
+    i.show_speed()
+    print('*' * 20)
