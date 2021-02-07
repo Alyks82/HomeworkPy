@@ -1,0 +1,49 @@
+from abc import ABC, abstractmethod
+
+class AbsClothes(ABC):
+
+    @abstractmethod
+    def est_exp(self):
+        pass
+
+class Coat(AbsClothes):
+    def __init__(self, size):
+        self.size = size
+
+    @property
+    def size(self):
+        return self.__size
+
+    @size.setter
+    def size(self, size):
+        if size < 38:
+            self.__size = 38
+            print(f'Таких маленьких не производим. Простите, если сможете... Будете носить {self.__size}')
+        elif size > 58:
+            self.__size = 58
+            print(f'Такие большие директор запретил выпускать. Нетолерантный он какой-то. Будете носить {self.__size}')
+        else:
+            self.__size = size
+
+    def est_exp(self):
+        self.e = round((self.__size / 6.5 + 0.5), 1)
+        print(f'Расход ткани на пальто составил: {self.e} м^2')
+
+
+class Suit(AbsClothes):
+    def __init__(self, height):
+        self.h = height
+
+    def est_exp(self):
+        self.e = round((2 * self.h + 0.3), 1)
+        print(f'Расход ткани на костюм составил: {self.e} м^2')
+
+
+watchman_coat = Coat(32)    # Демонстрация работы @property
+watchman_coat.est_exp()
+
+spy_coat = Coat(62)     # Демонстрация работы @property
+spy_coat.est_exp()
+
+mib_suit = Suit(1.75)   # Можно было тоже для костюма, но там бы я всё равно сделал по аналогии. Не могу понять других применений :(
+mib_suit.est_exp()

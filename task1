@@ -1,0 +1,39 @@
+class Matrix:
+    def __init__(self, data):
+        self.data = data
+
+    def __str__(self):
+        return ''.join([('  '.join([str(el) for el in line]) + '\n') for line in self.data])
+
+    def __add__(self, other):
+        # создаю пустой массив для получения результата
+        new_data = [[0 for el in range(max(len(self.data[0]), len(other.data[0])))]
+                    for line in range(max(len(self.data), len(other.data)))]
+        # перебором суммирую с исключением. Eсли какого-то элемента нет, присваиваю 0 или значение того что есть.
+        res = Matrix(new_data)
+        for l in range(len(res.data)):
+            for c in range(len(res.data[l])):
+                try:
+                    res.data[l][c] = self.data[l][c] + other.data[l][c]
+                except:
+                    try:
+                        res.data[l][c] = other.data[l][c]
+                    except:
+                        try:
+                            res.data[l][c] = self.data[l][c]
+                        except:
+                            res.data[l][c] = 0
+        return f'Результат сложения: \n{res}'
+
+
+neo_1 = Matrix([[31, 22], [37, 43], [51, 86]])
+neo_2 = Matrix([[3, 5, 32], [2, 4, 6], [-1, 65, -8]])
+neo_3 = Matrix([[3, 5, 8, 3], [8, 3, 7, 1]])
+
+print(neo_1)
+print(neo_2)
+print(neo_3)
+
+print(neo_1 + neo_2)
+print(neo_1 + neo_3)
+print(neo_2 + neo_3)

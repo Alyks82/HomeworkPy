@@ -1,0 +1,35 @@
+class MultiCellularOrg:
+    '''Вы уж меня простите, но для медика клетка, которая состоит из клеток, звучит матерно ;)
+    Пусть уж лучше будет класс - "многоклеточный организм". Можете меня ругать'''
+
+    def __init__(self, cell):
+        self.c = cell
+
+    def __add__(self, other):
+        return f'Сложение: {self.c + other.c}'
+
+    def __sub__(self, other):
+        return f'Вычитание: {abs(self.c - other.c)}'
+
+    def __mul__(self, other):
+        return f'Умножение: {self.c * other.c}'
+
+    def __floordiv__(self, other):
+        return f'Целочисленное деление: {self.c // other.c}'
+
+    def make_order(self, row):
+        res = ("#" * row + "\n") * (self.c // row) + "#" * (self.c % row)
+        return f"{res}"
+
+
+trilobit = MultiCellularOrg(52)
+jellyfish = MultiCellularOrg(18)
+
+print(trilobit.make_order(11))
+print('\n')
+print(jellyfish.make_order(7))
+
+print(trilobit + jellyfish)
+print(trilobit * jellyfish)
+print(trilobit - jellyfish)
+print(trilobit // jellyfish)
