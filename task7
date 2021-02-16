@@ -1,0 +1,39 @@
+class ComplexNumber:
+
+    def __init__(self, number):
+        self.x = [int(n) for n in number.split(" ") if n.isdigit()][0]
+        self.sign, imag_num = [n for n in number.split(" ") if
+                               not n.isdigit()]  # по идее конечно надо было отсортировать
+        # на исключение ошибки на обратный порядок ввод, но мне кажется не принципиально для этой задачи
+        y = int(imag_num[:-1:]) if len(imag_num) > 1 else 1
+        self.y = y if self.sign == "+" else y * (-1)
+        self.letter = imag_num[-1:]
+
+    def __str__(self):
+        return f'{self.x} {self.sign} {abs(self.y) if abs(self.y) != 1 else ""}{self.letter}'
+
+    def __add__(self, other):
+        if self.letter != other.letter:
+            return 'Мнимые части не совпадают. Я не знаю, как это складывать'
+        return f'{self.x + other.x} + {self.y + other.y}{self.letter}'
+
+    def __mul__(self, other):
+        if self.letter != other.letter:
+            return 'Мнимые части не совпадают. Я не знаю, как это умножать'
+        return f'{self.x * other.x - self.y * other.y} + {self.x * other.y + self.y * other.x}{self.letter}'
+
+
+n1 = ComplexNumber('3 + i')  # введение числа в алгебраической форме
+n2 = ComplexNumber('15 + 9i')  # введение числа в алгебраической форме
+n3 = ComplexNumber('2 + 7j')  # введение числа в алгебраической форме
+n4 = ComplexNumber('8 - 4i')  # со знаком -
+
+print(n1, 'складываем с ', n2, 'результат: ', n1 + n2)
+print(n2, 'складываем с ', n3, 'результат: ', n2 + n3)
+print(n1, 'складываем с ', n3, 'результат: ', n1 + n3)
+print(n2, 'складываем с ', n4, 'результат: ', n1 + n4)
+print('*' * 3)
+print(n1, 'умножаем на', n2, 'результат: ', n1 * n2)
+print(n2, 'умножаем на', n3, 'результат: ', n2 * n3)
+print(n1, 'умножаем на', n3, 'результат: ', n1 * n3)
+print(n2, 'умножаем на', n4, 'результат: ', n1 * n4)
