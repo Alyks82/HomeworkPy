@@ -1,0 +1,29 @@
+class IsDigit(Exception):
+    def __init__(self, txt):
+        self.txt = txt
+
+    @staticmethod
+    def check(line):
+        if line.isdigit():
+            return True
+        else:
+            print('')
+            return False
+
+
+list = []
+while True:
+    n = input("Введите число или слово stop для прекращения ввода ")
+    if n == 'stop':
+        break
+    try:
+        if not IsDigit.check(n):
+            raise IsDigit('Сиё счёту не подлежит. Попробуйте ещё раз')
+        else:
+            list.append(int(n))
+        continue
+    except IsDigit as err:
+        print(err)
+        continue
+
+print(f'Список содержит в себе {len(list)} элементов\nСодержание: {(list if list != [] else "отсутствует")}')
