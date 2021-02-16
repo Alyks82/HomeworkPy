@@ -1,0 +1,45 @@
+class Date:
+    def __init__(self, rawdate):
+        self.r = rawdate
+
+    @staticmethod
+    def valid(year, month, day):
+        if 1 <= month <= 12 and 1 <= day <= 31:  # проверка на отрицательные и выход дня за пределы
+            if day <= 28:
+                return 'Дата возможна'  # остаются 29,30,31
+            elif day == 31 and month not in [4, 6, 9, 11]:
+                return 'Дата возможна'  # остаются 29,30 из них важен только февраль, т.к. остальные по 30 дней
+            elif month == 2:
+                if day == 29:
+                    if year % 4 == 0:
+                        if year % 400 == 0:
+                            return 'Дата возможна'
+                        elif year % 100 == 0:
+                            return 'Вы задали невозможную дату'  # убираем ислючения 1700, 1800, 1900
+                        return 'Дата возможна'  # т.е. доказан високосный год
+                    else:
+                        return 'Вы задали невозможную дату'
+            elif day <= 30:
+                return 'Дата возможна'  # легитимный выход
+            else:
+                return 'Вы задали невозможную дату'  # всё прочее
+        else:
+            return 'Вы задали невозможную дату'
+
+    @classmethod
+    def transform(cls):
+        try:
+            year, month, day = map(int, input('Введите дату в формате гггг-мм-дд: ').split('-'))
+            print(f'Данные получены: год {year} месяц {month} день {day}')
+            print(Date.valid(year, month, day))
+            return year, month, day
+        except:
+            print('Ввод некорректен')
+
+
+Date.transform()
+print('#' * 50)
+print(f'{Date.valid(2019, 11, 31)} - Нет 31 ноября')
+print(f'{Date.valid(2020, 2, 29)} - Високосный год 2020')
+print(f'{Date.valid(1600, 2, 29)} - Високосный год 1600')
+print(f'{Date.valid(1700, 2, 29)} - Исключение - невисокосный год 1700')
