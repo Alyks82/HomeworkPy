@@ -1,0 +1,290 @@
+from abc import ABC, abstractmethod
+from random import choice
+
+
+class Storage:
+    def __init__(self, name, capacity, current_load, status):
+        self.name = name  # наименование помещение
+        self.capacity = capacity  # возможная загрузка
+        self.current = current_load  # текущая загруженность
+        self.status = status  # список товара в подразделении
+
+    def est_vol(self):  # перерасчёт свободного места
+        self.current = sum(map(float, [obj.vol for obj in self.status]))
+
+    def est_price(self):  # перерасчёт свободного места
+        return sum(map(float, [obj.price for obj in self.status]))
+
+    def validate_suf_place(self, obj):  # проверка возможности загрузки товара на склад
+        if obj.vol <= (self.capacity - self.current):
+            return True
+        else:
+            print('Извините, перемещение товара невозможно')
+            return False
+
+    def ins_item(self, obj):  # появление объекта в зоне выгрузки/погрузки, либо по дефолту
+        if self.validate_suf_place(obj):
+            self.status.append(obj)
+            print(f'Товар {obj.model} находится в "{self.name}"')
+            self.est_vol()
+        else:
+            print(f'Получение невозможно, освободите свободное место в "{self.name}"')
+
+    def del_item(self, obj):
+        print(f'Товар {obj.model} удалён из "{self.name}"')
+        self.status.remove(obj)
+        del obj
+        self.est_vol()
+        print(load_zone)
+
+    def transfer(self, other, obj):  # перевод между отделениями склада
+        if other.validate_suf_place(obj):
+            other.status.append(obj)
+            self.status.remove(obj)
+            print(f'Перемещение товара {obj.model} из "{self.name}" в "{other.name}" выполнено')
+            self.est_vol()
+            other.est_vol()
+        else:
+            print('Попробуйте подготовить пустое место в помещении прибытия груза')
+
+    def __str__(self):
+        return f'В помещении "{self.name}" находится "{len(self.status)}" предмет(a/ов). ' \
+               f'Общая загрузка {round(self.current, 1)} у.е. из {self.capacity} у.е. ' \
+               f'Общая cумма товара {self.est_price()} тугриков'
+
+
+class OfficeEquip(ABC):
+    def __init__(self, vol, price, model):
+        self.vol = vol  # сколько занимает условных единиц объёма склада
+        self.price = price  # цена
+        self.model = model  # модель устройства
+        print(f"Получен товар {self.model}")
+
+    @abstractmethod
+    def __del__(self):
+        pass
+
+
+p_list = ['Epson L120', 'Xerox Phaser 3020BI', 'Canon i-SENSYS LBP621Cw']
+s_list = ['Epson Perfection V370 Photo', 'HP ScanJet Pro 2000 s1', 'Canon CanoScan LiDE 300']
+c_list = ['CANON imageRUNNER 2204', 'Kyocera TASKalfa 181 1102KJ3NL0', 'CANON imageRUNNER C3025']
+
+p_dict = {0: (1, 4000, 'Epson L120', 'b&w'), 1: (1.5, 5000, 'Xerox Phaser 3020BI', 'b&w'),
+          2: (2, 1580, 'Canon i-SENSYS LBP621Cw', 'colour')}
+s_dict = {0: (1, 1200, 'Epson Perfection V370 Photo', '600 dpi'), 1: (2, 2800, 'HP ScanJet Pro 2000 s1', '900 dpi'),
+          2: (1.4, 8250, 'Canon CanoScan LiDE 300', '900 dpi')}
+c_dict = {0: (3.0, 5800, 'CANON imageRUNNER 2204', True), 1: (2.5, 4900, 'Kyocera TASKalfa 181 1102KJ3NL0', False),
+          2: (3.2, 7400, 'CANON imagRUNNER C3025', True)}
+
+
+class Printer(OfficeEquip):
+    def __init__(self, vol, price, model, color):
+        super().__init__(vol, price, model)
+        self.color = color  # цветной или ч/б
+
+    def __del__(self):
+        print(f'Отгружен принтер модели {self.model}. Освобождено {self.vol} у.е. пространства')
+
+
+class Scaner(OfficeEquip):
+    def __init__(self, vol, price, model, resolution, ):
+        super().__init__(vol, price, model)
+        self.res = resolution  # разрешение
+
+    def __del__(self):
+        print(f'Отгружен сканер модели {self.model}. Освобождено {self.vol} у.е. пространства')
+
+
+class Copier(OfficeEquip):  # вроде бы так лучше, чем ксерокс
+    def __init__(self, vol, price, model, double):
+        super().__init__(vol, price, model)
+        self.double = double  # с двух сторон
+
+    def __del__(self):
+        print(f'Отгружен копировальный автомат модели {self.model}. Освобождено {self.vol} у.е. пространства')
+
+
+''' Склад состоит из 4 помещений: зоны выгрузки/погрузки, транзита, первого и второго помещений хранения. 
+Общая для всех зона транзита. Удаление(отправление) и приём товара возможен только в первой зоне.
+Перед работой программы создана дефолтная расстановка товаров'''
+
+load_zone = Storage('Зона погрузки', 50, 0, [])
+transit_zone = Storage('Транзит', 10, 0, [])
+storage_1 = Storage('Склад А', 300, 0, [])
+storage_2 = Storage('Склад Б', 400, 0, [])
+
+'''Создаём несколько единиц оргтехники исходно находящихся на складе'''
+p1 = Printer(1, 4000, p_list[0], 'b&w')
+p2 = Printer(1.5, 5000, p_list[1], 'b&w')
+p3 = Printer(2, 5000, p_list[1], 'colour')
+s1 = Scaner(1, 1200, s_list[0], '600 dpi')
+s2 = Scaner(1, 2300, s_list[2], '900 dpi')
+s3 = Scaner(1, 2300, s_list[2], '900 dpi')  # два одинаковых экземпляра
+c1 = Copier(2.5, 4900, c_list[1], True)
+c2 = Copier(3.0, 5800, c_list[0], False)
+del (s3)
+
+'''Создаём исходное состояние склада'''
+load_zone.ins_item(p1)
+load_zone.ins_item(s1)
+storage_1.ins_item(p2)
+storage_1.ins_item(s2)
+storage_1.ins_item(c1)
+storage_1.ins_item(c2)
+storage_2.ins_item(p3)
+
+'''Передача из одного склада в другой'''
+# transit_zone.transfer(storage_1, p1)
+
+# """Текущее состояние склада"""
+# print(load_zone)
+# print(transit_zone)
+# print(storage_1)
+# print(storage_2)
+
+
+print('*' * 64)
+print('\tДобро пожаловать в программу "Свалка орг. техники" v2.0')
+print('*' * 64)
+while True:
+    print('1. Ввести новое поступление или отгрузить товар. \n2. Текущий статус склада\n'
+          '3. Управление складом \n4. Выход')
+    choose = input('Введите номер предполагаемого действия ')
+    if choose not in ['1', '2', '3', '4']:
+        print('Некорректный ввод')
+        continue
+
+    if choose == '1':  # блок введения товара
+        while True:
+            print('*' * 50)
+            print(
+                '1. Вы хотите ввести новое поступление\n2. Отгрузить предмет? *должен находиться в зоне выгрузки \n3. Выход')
+            choose1 = input('Введите номер предполагаемого действия ')
+            if choose1 == '1':
+                print('1. Это принтер?\n2. Это сканер? \n3. Это копировальная машина?\n4. Выход')
+                choose2 = input('Введите номер предполагаемого действия ')
+                if choose2 not in ['1', '2', '3', '4']:
+                    print('Некорректный ввод')
+                    continue
+                else:
+                    if choose2 == '1':  # принтер
+                        choose3 = (input(f'Выберите модель из списка {[el for el in enumerate(p_list)]} '))
+                        if choose3 not in ['0', '1', '2']:
+                            continue
+                        else:
+                            choose3 = int(choose3)
+                            s = ''.join(
+                                [choice('qwertyuiopasdfghjklzxcvbnm') for _ in range(20)])  # случайный идентификатор
+                            globals()[s] = Printer(p_dict[choose3][0], p_dict[choose3][1], p_dict[choose3][2],
+                                                   p_dict[choose3][3])  # не понял, как сделать правильнее :(
+                            load_zone.ins_item(globals()[s])
+
+                    elif choose2 == '2':  # сканер
+                        choose3 = (input(f'Выберите модель из списка {[el for el in enumerate(s_list)]} '))
+                        if choose3 not in ['0', '1', '2']:
+                            continue
+                        else:
+                            choose3 = int(choose3)
+                            s = ''.join(
+                                [choice('qwertyuiopasdfghjklzxcvbnm') for _ in range(20)])  # случайный идентификатор
+                            globals()[s] = Printer(s_dict[choose3][0], s_dict[choose3][1], s_dict[choose3][2],
+                                                   s_dict[choose3][3])
+                            load_zone.ins_item(globals()[s])
+                    elif choose2 == '3':  # копир
+                        choose3 = (input(f'Выберите модель из списка {[el for el in enumerate(c_list)]} '))
+                        if choose3 not in ['0', '1', '2']:
+                            continue
+                        else:
+                            choose3 = int(choose3)
+                            s = ''.join(
+                                [choice('qwertyuiopasdfghjklzxcvbnm') for _ in range(20)])  # случайный идентификатор
+                            globals()[s] = Printer(c_dict[choose3][0], c_dict[choose3][1], c_dict[choose3][2],
+                                                   c_dict[choose3][3])
+                            load_zone.ins_item(globals()[s])
+                    else:
+                        break
+            elif choose1 == '2':  # отгрузка товара (уничтожение экземпляра)
+                print(load_zone)
+                try:
+                    choose2 = int((input(f'Выберите модель из списка {[obj.model for obj in load_zone.status]} ')))
+                except:
+                    print('Некорректный ввод')
+                    continue
+                if choose2 not in range(len(load_zone.status)):
+                    print('Некорректный ввод')
+                    continue
+                else:
+                    load_zone.del_item(load_zone.status[choose2])
+            else:
+                print("Выход из подменю")
+                break
+
+    if choose == '2':  # блок актуального состояния склада
+        print('*' * 50)
+        print(load_zone)
+        print(transit_zone)
+        print(storage_1)
+        print(storage_2)
+        print('*' * 50)
+        continue
+    if choose == '3':  # перемещение единиц
+        print('*' * 50)
+        print('1. Перевод груза из зоны погрузки в зону транзита\n'
+              '2. Перевод груза из зоны транзита в зону погрузки/выгрузки\n'
+              '3. Перевод груза из зоны транзита в склад А\n'
+              '4. Перевод груза со склада А в зону транзита\n'
+              '5. Перевод груза из зоны транзита в склад Б\n'
+              '6. Перевод груза со склада Б в зону транзита\n'
+              '7. Выход из подменю\n')
+        print('*' * 50)
+        choose1 = input('Введите номер проводимого действия ')
+        if choose1 not in ['1', '2', '3', '4', '5', '6', '7']:
+            print('Указано неверное действие')
+            continue
+        choose1 = int(choose1)
+        if choose1 == 1:
+            try:
+                choose2 = int(input(f'Выберите модель из списка {[el for el in enumerate([obj.model for obj in load_zone.status])]} '))
+                load_zone.transfer(transit_zone, load_zone.status[choose2])
+            except:
+                print('Некорректный ввод')
+        elif choose1 == 2:
+            try:
+                choose2 = int(input(f'Выберите модель из списка {[el for el in enumerate([obj.model for obj in transit_zone.status])]} '))
+                transit_zone.transfer(load_zone, transit_zone.status[choose2])
+            except:
+                print('Некорректный ввод')
+        elif choose1 == 3:
+            try:
+                choose2 = int(input(f'Выберите модель из списка {[el for el in enumerate([obj.model for obj in transit_zone.status])]} '))
+                transit_zone.transfer(storage_1, transit_zone.status[choose2])
+            except:
+                print('Некорректный ввод')
+        elif choose1 == 4:
+            try:
+                choose2 = int(input(f'Выберите модель из списка {[el for el in enumerate([obj.model for obj in storage_1.status])]} '))
+                storage_1.transfer(transit_zone, storage_1.status[choose2])
+            except:
+                print('Некорректный ввод')
+        elif choose1 == 5:
+            try:
+                choose2 = int(input(f'Выберите модель из списка {[el for el in enumerate([obj.model for obj in transit_zone.status])]} '))
+                transit_zone.transfer(storage_2, transit_zone.status[choose2])
+            except:
+                print('Некорректный ввод')
+        elif choose1 == 6:
+            try:
+                choose2 = int(input(f'Выберите модель из списка {[el for el in enumerate([obj.model for obj in storage_2.status])]} '))
+                storage_2.transfer(transit_zone, storage_2.status[choose2])
+            except:
+                print('Некорректный ввод')
+
+        else:
+            break
+    if choose == '4':  # Выход из программы
+        print('Спасибо за пользование программой')
+        break
+
+print('*' * 64)
+print("Фирма прикрылась. Склад разграбили :)")
+print('*' * 64)
