@@ -1,0 +1,21 @@
+from sys import exit
+
+
+class ExcuseMe(Exception):
+    def __init__(self, txt):
+        self.t = txt
+
+
+try:
+    n, m = map(int, input('Введите два целых числа (делимое и делитель) через пробел ').split(' '))
+except ValueError:
+    print('Ввод не корректен')
+    exit()
+
+try:
+    if m == 0:
+        raise ExcuseMe('А разве я не сказал, что ноль вводить нельзя???')
+except ExcuseMe as err:
+    print(err)
+else:
+    print(f'{n} поделить на {m} получается {round(n / m, 1)}')
