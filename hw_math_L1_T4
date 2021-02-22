@@ -1,0 +1,9 @@
+%matplotlib inline
+import numpy as np
+import matplotlib.pyplot as plt
+x = np.linspace(0, 20, 80)
+k = 1
+plt.plot(x, np.cos(k * x), marker="o")
+k = 0.5
+plt.plot(x, np.cos(k * x), marker="o")
+print(x)
